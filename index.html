@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trigonometry Challenge</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Thai",sans-serif;background:linear-gradient(135deg,#101936,#1c2b5a 55%,#4b2c78);color:#fff;min-height:100vh}
+button,input,select{font:inherit}
+.app{max-width:1050px;margin:auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}
+.logo{font-size:25px;font-weight:800}.score{background:#ffffff18;border:1px solid #ffffff25;padding:10px 15px;border-radius:14px}
+.screen{display:none}.screen.active{display:block}
+.card{background:#ffffff10;border:1px solid #ffffff20;border-radius:22px;padding:28px;box-shadow:0 15px 40px #0005;backdrop-filter:blur(10px)}
+.hero{text-align:center;padding:45px 25px}.hero h1{font-size:44px;margin:8px 0}.hero p{color:#dce3ff;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:25px 0}
+.level{padding:22px;border-radius:18px;background:#ffffff0c;border:1px solid #ffffff18}
+.level h3{margin-top:0}.level span{font-size:30px}
+.primary{background:#7c5cff;color:#fff;border:0;border-radius:13px;padding:13px 20px;cursor:pointer;font-weight:700;transition:.15s}
+.primary:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.secondary{background:#ffffff12;color:#fff;border:1px solid #ffffff25;border-radius:13px;padding:12px 18px;cursor:pointer}
+.progress{height:10px;background:#ffffff18;border-radius:99px;overflow:hidden;margin:16px 0 24px}.bar{height:100%;background:#7cdbff;width:0;transition:.3s}
+.question{font-size:25px;font-weight:700;text-align:center;margin:25px 0}
+.answer-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.answer{background:#ffffff12;color:#fff;border:1px solid #ffffff20;border-radius:15px;padding:18px;cursor:pointer}.answer:hover{background:#ffffff20}
+.feedback{text-align:center;min-height:55px;padding:15px;font-weight:700}
+.correct{color:#73f5a4}.wrong{color:#ff8f9d}
+.center{text-align:center}
+.table-container{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:18px 0}th,td{border:1px solid #ffffff25;padding:8px;text-align:center}th{background:#ffffff12}
+td select{width:100%;min-width:90px;background:#1c2b5a;border:1px solid #ffffff40;color:#fff;border-radius:9px;padding:8px;text-align:center;cursor:pointer}
+td select option{background:#101936;color:#fff}
+.unit{position:relative;width:min(390px,85vw);aspect-ratio:1;margin:20px auto;border:2px solid #ffffffaa;border-radius:50%;background:radial-gradient(circle,#ffffff08 1px,transparent 1px);background-size:20px 20px}
+.unit:before,.unit:after{content:"";position:absolute;background:#ffffff55}.unit:before{width:100%;height:1px;top:50%;left:0}.unit:after{height:100%;width:1px;left:50%;top:0}
+.dot{position:absolute;width:18px;height:18px;border-radius:50%;background:#ffcf5c;transform:translate(-50%,-50%);box-shadow:0 0 15px #ffcf5c}
+.coord{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:450px;margin:auto}.coord input{background:#ffffff12;border:1px solid #ffffff30;color:white;padding:13px;border-radius:12px;text-align:center}
+.result{font-size:26px;font-weight:800;margin:20px}.small{color:#c9d2f4;font-size:14px}
+.review{margin-top:15px;text-align:left}.review div{padding:12px;border-bottom:1px solid #ffffff15}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.answer-grid{grid-template-columns:1fr}.hero h1{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="logo">📐 Trigonometry Challenge</div>
+<div class="score">⭐ คะแนน: <b id="score">0</b></div>
+</header>
+
+<section id="home" class="screen active">
+<div class="card hero">
+<div style="font-size:55px">📐</div>
+<h1>Trigonometry Challenge</h1>
+<p>เกมคณิตศาสตร์ ม.5 — ฝึกค่า sin cos tan และวงกลมหนึ่งหน่วย</p>
+<div class="grid">
+<div class="level"><span>🧮</span><h3>ด่าน 1</h3><b>ตารางค่าตรีโกณมิติ</b><p class="small">10 คะแนน</p></div>
+<div class="level"><span>⭕</span><h3>ด่าน 2</h3><b>วงกลม 1 หน่วย</b><p class="small">5 คะแนน</p></div>
+<div class="level"><span>⚔️</span><h3>ด่าน 3</h3><b>True / False</b><p class="small">15 คะแนน</p></div>
+</div>
+<button class="primary" onclick="startGame()">▶ เริ่มเกม</button>
+</div>
+</section>
+
+<section id="stage1" class="screen">
+<div class="card">
+<h2>🧮 ด่าน 1 — เลือกคำตอบในตารางค่าตรีโกณมิติ</h2>
+<p class="small">กดที่ช่องในตารางแล้วเลือกค่าอัตราส่วนที่ถูกต้องให้ครบทุกช่อง</p>
+<div class="table-container">
+<table><thead><tr><th>มุม</th><th>sin</th><th>cos</th><th>tan</th><th>cosec</th><th>sec</th><th>cot</th></tr></thead>
+<tbody id="trigTable"></tbody></table>
+</div>
+<div class="center"><button class="primary" onclick="checkStage1()">ตรวจคำตอบ (+10)</button></div>
+<div id="s1feedback" class="feedback"></div>
+</div>
+</section>
+
+<section id="stage2" class="screen">
+<div class="card center">
+<h2>⭕ ด่าน 2 — วงกลม 1 หน่วย</h2>
+<p>จงเติมคู่อันดับ <b>(x, y)</b> ของจุดที่กำหนด</p>
+<div class="unit"><div id="dot" class="dot"></div></div>
+<h2 id="angleText">มุม 45°</h2>
+<div class="coord"><input id="xAns" placeholder="x"><input id="yAns" placeholder="y"></div>
+<p class="small">ตัวอย่างรูปแบบ: 1/2 หรือ √3/2</p>
+<br><button class="primary" onclick="checkStage2()">ตรวจคำตอบ (+5)</button>
+<div id="s2feedback" class="feedback"></div>
+</div>
+</section>
+
+<section id="stage3" class="screen">
+<div class="card">
+<h2>⚔️ ด่าน 3 — True / False</h2>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div class="center small" id="qnum">ข้อ 1 / 15</div>
+<div class="question" id="question"></div>
+<div class="answer-grid">
+<button class="answer" onclick="answerTF(true)">✅ ถูก (TRUE)</button>
+<button class="answer" onclick="answerTF(false)">❌ ผิด (FALSE)</button>
+</div>
+<div id="feedback" class="feedback"></div>
+</div>
+</section>
+
+<section id="result" class="screen">
+<div class="card center">
+<div style="font-size:60px">🏆</div><h1>จบเกม!</h1>
+<div class="result">คะแนนรวม <span id="finalScore">0</span> / 30</div>
+<p id="rank"></p>
+<div id="review" class="review"></div>
+<br><button class="primary" onclick="location.reload()">🔄 เล่นใหม่</button>
+</div>
+</section>
+</div>
+
+<script>
+let score=0, stage1Done=false, stage2Done=false, qIndex=0, tfScore=0, questions=[];
+
+// รายการตัวเลือกสำหรับด่าน 1
+const optionsList = ["--เลือก--", "0", "1", "1/2", "√2/2", "√3/2", "1/√3", "√3", "2", "2/√3", "√2", "ไม่นิยาม"];
+
+const trig=[
+{a:"0°",v:["0","1","0","ไม่นิยาม","1","ไม่นิยาม"]},
+{a:"30°",v:["1/2","√3/2","1/√3","2","2/√3","√3"]},
+{a:"45°",v:["√2/2","√2/2","1","√2","√2","1"]},
+{a:"60°",v:["√3/2","1/2","√3","2/√3","2","1/√3"]},
+{a:"90°",v:["1","0","ไม่นิยาม","1","ไม่นิยาม","0"]}
+];
+
+const tf=[
+["sin 30° = 1/2",true,"ค่ามาตรฐานของ sin 30° คือ 1/2"],
+["cos 60° = √3/2",false,"cos 60° = 1/2"],
+["tan 45° = 1",true,"tan 45° = 1"],
+["sin²θ + cos²θ = 1",true,"เป็นอัตลักษณ์ตรีโกณมิติพื้นฐาน"],
+["tan θ = sin θ / cos θ",true,"เมื่อ cos θ ≠ 0"],
+["sec θ = 1/cos θ",true,"เป็นนิยามของ sec"],
+["cot θ = 1/tan θ",true,"เมื่อ tan θ ≠ 0"],
+["sin 90° = 0",false,"sin 90° = 1"],
+["กราฟ y = sin x มีค่าสูงสุด 1",true,"ช่วงค่าของ sin x คือ [-1,1]"],
+["กราฟ y = cos x มีคาบ 2π",true,"cos x กลับมาซ้ำทุก 2π"],
+["tan 90° = 1",false,"tan 90° ไม่กำหนด"],
+["cos 0° = 1",true,"ค่ามาตรฐานคือ 1"],
+["sin 180° = 1",false,"sin 180° = 0"],
+["กราฟ y = 2sin x มีแอมพลิจูด 2",true,"ค่าสัมบูรณ์ของสัมประสิทธิ์หน้า sin คือแอมพลิจูด"],
+["กราฟ y = sin 2x มีคาบ 2π",false,"คาบของ sin(bx) คือ 2π/|b| จึงเป็น π"]
+];
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active")}
+function updateScore(){document.getElementById("score").textContent=score}
+function startGame(){score=0;updateScore();buildTable();show("stage1")}
+
+function buildTable(){
+const body=document.getElementById("trigTable");body.innerHTML="";
+trig.forEach((r,i)=>{
+  let tr=document.createElement("tr");
+  let optionsHTML = optionsList.map(opt => `<option value="${opt}">${opt}</option>`).join("");
+  
+  tr.innerHTML="<th>"+r.a+"</th>"+r.v.map((_,j)=>`<td><select id="s1-${i}-${j}">${optionsHTML}</select></td>`).join("");
+  body.appendChild(tr);
+});
+}
+
+function norm(s){return s.trim().replaceAll(" ","").replaceAll("√","sqrt").replaceAll("−","-").toLowerCase()}
+
+function checkStage1(){
+let ok=0,total=0;
+trig.forEach((r,i)=>r.v.forEach((ans,j)=>{
+  total++;
+  let el=document.getElementById(`s1-${i}-${j}`);
+  if(norm(el.value)===norm(ans)){
+    ok++;
+    el.style.borderColor="#73f5a4";
+  }else{
+    el.style.borderColor="#ff8f9d";
+  }
+}));
+
+if(ok===total&&!stage1Done){
+  score+=10;stage1Done=true;updateScore();
+  document.getElementById("s1feedback").innerHTML='<span class="correct">🎉 ถูกครบทุกช่อง! +10 คะแนน</span><br><br><button class="primary" onclick="setupStage2()">ไปด่าน 2 →</button>';
+}else{
+  document.getElementById("s1feedback").innerHTML=`ตอบถูก ${ok}/${total} ช่อง — แก้ช่องขอบสีแดงแล้วกดตรวจอีกครั้ง`;
+}
+}
+
+let stage2={};
+function setupStage2(){
+const angles=[0,30,45,60,90,120,135,150,180,210,225,240,270,300,315,330];
+stage2.angle=angles[Math.floor(Math.random()*angles.length)];
+let rad=stage2.angle*Math.PI/180;
+stage2.x=Math.cos(rad);stage2.y=Math.sin(rad);
+document.getElementById("angleText").textContent="มุม "+stage2.angle+"°";
+document.getElementById("xAns").value="";document.getElementById("yAns").value="";
+const dot=document.getElementById("dot");
+dot.style.left=(50+stage2.x*43)+"%";dot.style.top=(50-stage2.y*43)+"%";
+document.getElementById("s2feedback").innerHTML="";show("stage2");
+}
+
+function parseAns(s){
+s=norm(s);
+const vals={"0":0,"1":1,"-1":-1,"1/2":.5,"-1/2":-.5,"sqrt2/2":Math.SQRT1_2,"-sqrt2/2":-Math.SQRT1_2,"sqrt3/2":Math.sqrt(3)/2,"-sqrt3/2":-Math.sqrt(3)/2,"sqrt3/3":Math.sqrt(3)/3,"-sqrt3/3":-Math.sqrt(3)/3,"sqrt3":Math.sqrt(3),"-sqrt3":-Math.sqrt(3)};
+return vals[s]!==undefined?vals[s]:Number(s)
+}
+
+function checkStage2(){
+let x=parseAns(document.getElementById("xAns").value),y=parseAns(document.getElementById("yAns").value);
+let ok=Math.abs(x-stage2.x)<.02&&Math.abs(y-stage2.y)<.02;
+if(ok&&!stage2Done){score+=5;stage2Done=true;updateScore();document.getElementById("s2feedback").innerHTML='<span class="correct">🎉 ถูกต้อง! +5 คะแนน</span><br><button class="primary" onclick="setupStage3()">ไปด่าน 3 →</button>'}
+else document.getElementById("s2feedback").innerHTML=ok?'ตอบถูก แต่ด่านนี้จบไปแล้ว':'<span class="wrong">❌ ยังไม่ถูก ลองใหม่</span> — คู่อันดับคือ ('+formatExact(stage2.x)+', '+formatExact(stage2.y)+')';
+}
+
+function formatExact(v){
+let known=[[0,"0"],[1,"1"],[-1,"-1"],[.5,"1/2"],[-.5,"-1/2"],[Math.SQRT1_2,"√2/2"],[-Math.SQRT1_2,"-√2/2"],[Math.sqrt(3)/2,"√3/2"],[-Math.sqrt(3)/2,"-√3/2"],[Math.sqrt(3)/3,"√3/3"],[-Math.sqrt(3)/3,"-√3/3"]];
+let x=known.find(a=>Math.abs(a[0]-v)<1e-9);return x?x[1]:v.toFixed(2)
+}
+
+function setupStage3(){
+questions=[...tf].sort(()=>Math.random()-.5);qIndex=0;tfScore=0;document.getElementById("feedback").textContent="";show("stage3");renderQ();
+}
+
+function renderQ(){
+document.getElementById("qnum").textContent=`ข้อ ${qIndex+1} / ${questions.length}`;
+document.getElementById("question").textContent=questions[qIndex][0];
+document.getElementById("bar").style.width=(qIndex/questions.length*100)+"%";
+document.querySelectorAll(".answer").forEach(b=>b.disabled=false);
+}
+
+function answerTF(choice){
+document.querySelectorAll(".answer").forEach(b=>b.disabled=true);
+let q=questions[qIndex],correct=q[1]===choice;
+if(correct){tfScore++;document.getElementById("feedback").innerHTML='<span class="correct">✅ ถูกต้อง!</span> '+q[2]}
+else document.getElementById("feedback").innerHTML='<span class="wrong">❌ ผิด</span> — '+q[2];
+setTimeout(()=>{qIndex++;if(qIndex<questions.length)renderQ();else finish()},900)
+}
+
+function finish(){
+score+=tfScore;updateScore();document.getElementById("finalScore").textContent=score;
+document.getElementById("rank").innerHTML=score>=27?"🏆 Trigonometry Master":score>=21?"⭐ Trigonometry Expert":score>=15?"📘 Trigonometry Student":"💪 Keep Practicing!";
+document.getElementById("review").innerHTML=`<div>🧮 ด่าน 1: 10 / 10</div><div>⭕ ด่าน 2: ${stage2Done?5:0} / 5</div><div>⚔️ ด่าน 3: ${tfScore} / 15</div><div><b>รวม: ${score} / 30 คะแนน</b></div>`;
+show("result")
+}
+</script>
+</body>
+</html>
